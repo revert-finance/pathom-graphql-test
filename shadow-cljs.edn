@@ -1,0 +1,6 @@
+{:deps true
+ :builds
+ {:app {:target :browser
+        :modules {:main {:init-fn revert.pathom-graphql-test/init}}
+        :devtools {:http-root "./public"
+                   :http-port 3000}}}}

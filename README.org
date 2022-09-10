@@ -1,0 +1,81 @@
+* pathom-graphql-test
+
+Test a pathom graphql resolver in the browser
+
+** TLDR;
+
+The idea is to be able to run the following resolver in the browser with a federation query. Check the [[https://github.com/revert-finance/pathom-graphql-test/blob/main/src/revert/pathom_graphql_test.cljs][cljs file]].
+
+#+NAME: graphql resolver
+#+BEGIN_SRC clojure
+    (def env (-> {}
+               (pci/register
+                [(pbir/equivalence-resolver :staker.Incentive/rewardToken :univ3.Token/id)])
+               (p.gql/connect-graphql
+                {::p.gql/namespace "univ3"}
+                #(request-subgraph % "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon"))
+               (p.gql/connect-graphql
+                {::p.gql/namespace "staker"}
+                #(request-subgraph % "https://api.thegraph.com/subgraphs/name/revert-finance/uni-v3-vesting-staker-polygon"))))                
+
+    (p.eql/process
+                  env
+                  [{'(:staker.Query/incentives {:first 10})
+                    [:staker.Incentive/id
+                     :staker.Incentive/contract
+                     :univ3.Token/symbol]}])
+#+END_SRC
+
+But for some reason I am getting the following exception:
+
+#+NAME: exception message
+#+BEGIN_SRC
+    Graph execution failed: Required attributes missing: [:univ3.Token/symbol] at path [:staker.Query/incentives 0]
+#+END_SRC
+
+
+And I also discovered that this queries failed, notice that the first one is not a federation query
+
+#+NAME: alternative queries
+#+BEGIN_SRC clojure
+   (p.eql/process
+                  env
+                  {:staker.Incentive/id "0x0bb698b687540a7f44504cf1063a4977d2351f201f18fc50281def0f36349d2e"}
+                  [:staker.Incentive/contract])
+
+    (p.eql/process
+                env
+                {:staker.Incentive/id "0x0bb698b687540a7f44504cf1063a4977d2351f201f18fc50281def0f36349d2e"}
+                [:staker.Incentive/contract
+                :univ3.Token/symbol])
+#+END_SRC
+
+With the following exception for the first one
+
+#+NAME: exception message
+#+BEGIN_SRC
+    Graph execution failed: Required attributes missing: [:staker.Incentive/contract] at path []
+#+END_SRC
+
+Note that all this works in [[https://github.com/revert-finance/pathom-graphql-test/blob/main/src/revert/pathom_graphql_test.clj][plain clojure]]
+
+** Installation
+
+- [[https://practical.li/clojure/clojure-cli/install/java.html][Java]]
+- [[https://practical.li/clojure/clojure-cli/install/clojure-cli.html][Clojure cli]]
+
+** Usage
+
+
+*** Clojure
+
+- jack in a clojure repl 
+- play with the pathom-graphql-test namespace
+
+*** Clojurescript
+
+- jack in a clojurescript repl
+- select shadow
+- select the :app build
+- navigate to [[http://localhost:3000][http://localhost:3000]]
+- play with the pathom-graphql-test namespace

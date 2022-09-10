@@ -1,0 +1,13 @@
+{:paths ["src" "resources"]
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/clojurescript {:mvn/version "1.11.60"}
+        thheller/shadow-cljs {:mvn/version "2.19.9"}
+        com.wsscode/pathom3 {:mvn/version "2022.04.20-alpha"}
+        com.wsscode/pathom3-graphql {:mvn/version "2022.04.24-alpha"}
+        http-kit/http-kit {:mvn/version "2.7.0-alpha1"}
+        funcool/promesa {:mvn/version "8.0.450"}
+        cider/cider-nrepl {:mvn/version "0.28.5"}}
+
+ :aliases
+ {:shadow-cljs
+  {:main-opts ["-m" "shadow.cljs.devtools.cli"]}}}
